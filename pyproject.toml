@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = "Automated system for filtering job offers on LinkedIn."
+license = "MIT"
+authors = ["Leandro Franco <leandro00fr@gmail.com>"]
+readme = "README.md"
+package-mode = true
+
+[tool.poetry.dependencies]
+python = "^3.12"
+python-dotenv = "^1.0.1"
+selenium = "^4.26.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.6.1"
+pytest = "^8.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+start = 'app.main:main'
+test = 'pytest:main'
+
+[tool.ruff]
+line-length = 110
+ignore = ["F403", "F405"]
+
+select = [
+  "E",
+  "F",
+  "UP",
+  "I",
+]
