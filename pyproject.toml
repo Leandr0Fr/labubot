@@ -11,6 +11,9 @@ package-mode = true
 python = "^3.12"
 python-dotenv = "^1.0.1"
 selenium = "^4.26.0"
+google-api-python-client = "^2.149.0"
+google-auth-httplib2 = "^0.2.0"
+google-auth-oauthlib = "^1.2.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.6.1"
