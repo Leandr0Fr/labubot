@@ -2,12 +2,9 @@ import math
 import re
 import time
 
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
-from ..constants.constants import EMAIL, PSW
+from ..constants.constants import EMAIL, KEYWORDS, PSW
 from .driver import DriverSingleton
 
 
@@ -25,10 +22,6 @@ def login():
     login_button.click()
 
 
-# Lista de palabras clave para buscar en los títulos
-keywords = ["Desarrollador", "Programador", "Backend", "Fullstack"]
-
-
 def get_jobs():
     login()
     time.sleep(10)
@@ -38,16 +31,16 @@ def get_jobs():
     driver.get(base_url)
 
     number_jobs = driver.find_element(By.XPATH, "//span[@dir='ltr']")
-    first_digits = get_first_digits(number_jobs.text)
-    total_pages = get_num_pags(first_digits)
-    print("Número de trabajos:", first_digits)
-    print("Total de páginas:", total_pages)
+    jobs_found = get_first_digits(number_jobs.text)
+    total_pages = get_num_pags(jobs_found)
 
+    jobs = {}
     for page in range(total_pages):
         page_url = base_url.format(page * 25)
         driver.get(page_url)
-        search_and_click_titles(driver, keywords)
-        time.sleep(3)
+        jobs.update(get_match_jobs(driver, KEYWORDS))
+
+    return jobs
 
 
 def get_first_digits(text: str) -> int:
@@ -60,13 +53,12 @@ def get_num_pags(number_jobs: int) -> int:
     return math.ceil(number_jobs / jobs_per_page)
 
 
-def search_and_click_titles(driver, keywords):
+def get_match_jobs(driver, keywords) -> dict:
+    jobs_match = {}
     results_list = driver.find_element(By.CLASS_NAME, "jobs-search-results-list")
-
     ul_element = results_list.find_element(By.CLASS_NAME, "scaffold-layout__list-container")
-
     li_elements = ul_element.find_elements(By.CLASS_NAME, "jobs-search-results__list-item")
-    print(len(li_elements))
+    matchs = 0
     scroll_percentage = 0
     for li in li_elements:
         scroll_percentage += 4
@@ -76,22 +68,24 @@ def search_and_click_titles(driver, keywords):
         title_element = li.find_element(By.CLASS_NAME, "job-card-list__title")
         title_strong = title_element.find_element(By.TAG_NAME, "strong")
         title_text = title_strong.text
-        print(title_text)
-        time.sleep(5)
-    # title_words = title_text.lower().split()
+        title_words = title_text.lower().split()
+        time.sleep(4)
 
-    # if any(keyword.lower() in title_words for keyword in keywords):
-    # print(f"Título coincidente encontrado: {title_text}")
-    # li.click()
-    # time.sleep(3)
-    # extract_description_text(driver)
+        if any(keyword.lower() in title_words for keyword in keywords):
+            li.click()
+            time.sleep(4)
+            matchs += 1
+            description = extract_description_text(driver)
+            jobs_match[title_element.get_attribute("href")] = description
+
+    return jobs_match
 
 
-def extract_description_text(driver):
+def extract_description_text(driver) -> str:
     description_container = driver.find_element(By.CLASS_NAME, "jobs-description__container")
     p_container = description_container.find_element(By.CLASS_NAME, "mt4")
     description = p_container.find_element(By.TAG_NAME, "p")
     paragraph_spans = description.find_elements(By.TAG_NAME, "span")
 
     paragraph_text = " ".join([span.text for span in paragraph_spans])
-    print("Texto de la descripción:", paragraph_text)
+    return paragraph_text

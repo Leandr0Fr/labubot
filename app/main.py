@@ -5,7 +5,7 @@ from .scraping.scrap_linkedin import get_jobs
 
 def main():
     load_dotenv()
-    get_jobs()
+    print(get_jobs())
 
 
 if __name__ == "__main__":
