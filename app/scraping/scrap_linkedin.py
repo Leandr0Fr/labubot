@@ -22,13 +22,13 @@ def login():
     login_button.click()
 
 
-def get_jobs():
+def get_jobs(keyword: str) -> dict:
     login()
     time.sleep(10)
 
     driver = DriverSingleton.get_driver()
-    base_url = "https://www.linkedin.com/jobs/search/?keywords=desarrollador&f_TPR=r86400&origin=JOB_SEARCH_PAGE_JOB_FILTER&sortBy=DD&start={}"
-    driver.get(base_url)
+    base_url = "https://www.linkedin.com/jobs/search/?keywords={}&f_TPR=r86400&origin=JOB_SEARCH_PAGE_JOB_FILTER&sortBy=DD&start="
+    driver.get(base_url.format(keyword) + "0")
 
     number_jobs = driver.find_element(By.XPATH, "//span[@dir='ltr']")
     jobs_found = get_first_digits(number_jobs.text)
@@ -36,7 +36,7 @@ def get_jobs():
 
     jobs = {}
     for page in range(total_pages):
-        page_url = base_url.format(page * 25)
+        page_url = base_url.format(keyword) + str(page * 25)
         driver.get(page_url)
         jobs.update(get_match_jobs(driver, KEYWORDS))
 
