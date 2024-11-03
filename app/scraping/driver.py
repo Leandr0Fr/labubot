@@ -14,7 +14,6 @@ class DriverSingleton:
     @staticmethod
     def _initialize_driver():
         options = Options()
-        options.headless = True
         driver = webdriver.Chrome(options=options)
         return driver
 
@@ -23,4 +22,4 @@ class DriverSingleton:
         return cls()._driver
 
     def close_driver(self):
-        self._driver.quit()
+        self.get_driver().quit()
