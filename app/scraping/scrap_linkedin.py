@@ -10,7 +10,7 @@ from .driver import DriverSingleton
 
 def login():
     driver = DriverSingleton.get_driver()
-    base_url = "https://www.linkedin.com/login/es?fromSignIn=true&trk=guest_homepage-basic_nav-header-signin"
+    base_url = "https://www.linkedin.com/checkpoint/lg/sign-in-another-account"
 
     driver.get(base_url)
     username_input = driver.find_element(By.ID, "username")
@@ -24,7 +24,7 @@ def login():
 
 def get_jobs(keyword: str) -> dict:
     login()
-    time.sleep(10)
+    time.sleep(60)
 
     driver = DriverSingleton.get_driver()
     base_url = "https://www.linkedin.com/jobs/search/?keywords={}&f_TPR=r86400&origin=JOB_SEARCH_PAGE_JOB_FILTER&sortBy=DD&start="
