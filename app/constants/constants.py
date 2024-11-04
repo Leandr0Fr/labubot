@@ -13,3 +13,6 @@ KEYWORDS = _KEYWORDS.split(",")
 # Linkedin credentials
 EMAIL = os.getenv("LINKEDIN_EMAIL")
 PSW = os.getenv("LINKEDIN_PSW")
+
+# Telegram
+TELEGRAM_KEY = os.getenv("TELEGRAM_KEY")
