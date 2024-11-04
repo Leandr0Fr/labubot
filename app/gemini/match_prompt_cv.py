@@ -11,6 +11,7 @@ def match_cv(job: str) -> enumerate:
     response = model.generate_content(f"""
     Compare la siguiente oferta laboral: {job}
     con el siguiente CV: {CV}
+    Descarta las ofertas para seniors, marcalas como "RED".
     Si es compatible escribe 'GREEN'.
     Si no tan compatible (capaz por año de experiencia o tecnologías faltantes) escribe 'YELLOW'.
     Si no es compatible escribe 'RED'.
