@@ -7,8 +7,12 @@ SECRET_KEY = os.getenv("APIKEY")
 CV = os.getenv("CV")
 
 # Keywords
-_KEYWORDS = os.getenv("KEYWORDS")
+_KEYWORDS = os.getenv("KEYWORDS_SEARCH")
 KEYWORDS = _KEYWORDS.split(",")
+
+# Tags
+_TAGS = os.getenv("TAGS")
+TAGS = _TAGS.split(",")
 
 # Linkedin credentials
 EMAIL = os.getenv("LINKEDIN_EMAIL")
