@@ -20,3 +20,4 @@ PSW = os.getenv("LINKEDIN_PSW")
 
 # Telegram
 TELEGRAM_KEY = os.getenv("TOKEN_TELEGRAM")
+TELEGRAM_ID = os.getenv("TELEGRAM_USERID")
