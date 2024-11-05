@@ -14,7 +14,7 @@ def main():
     login()
     for keyword in KEYWORDS:
         jobs = get_jobs(keyword)
-        for key, job in jobs.items():
+        for url, job in jobs.items():
             time.sleep(1)
             match = match_cv(job)
             color = ""
@@ -24,7 +24,7 @@ def main():
                 color = "🟢"
             if match == Match_Color.ROJO:
                 continue
-            send_ofert(key, color)
+            send_ofert(url, color)
 
 
 if __name__ == "__main__":
