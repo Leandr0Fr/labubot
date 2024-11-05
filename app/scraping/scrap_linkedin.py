@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from ..constants.constants import EMAIL, PSW, TAGS
+from ..constants.constants import EMAIL, PSW, TAGS, TAGS_BANNED
 from .driver import DriverSingleton
 
 
@@ -95,9 +95,11 @@ def get_match_jobs(driver, tags) -> dict:
             title_strong = title_element.find_element(By.TAG_NAME, "strong")
             title_text = title_strong.text
             title_words = title_text.lower()
-            title_words = title_words.replace("(", "").replace(")", "").replace("-", "")
+            title_words = title_words.replace("(", "").replace(")", "").replace("-", "").replace("/", "")
             title_words = title_words.split()
-            if any(tag in title_words for tag in tags):
+            if any(tag in title_words for tag in tags) and not any(
+                tag_b in title_words for tag_b in TAGS_BANNED
+            ):
                 li.click()
                 time.sleep(1)
                 WebDriverWait(driver, 20).until(

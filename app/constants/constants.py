@@ -13,6 +13,8 @@ KEYWORDS = _KEYWORDS.split(",")
 # Tags
 _TAGS = os.getenv("TAGS")
 TAGS = _TAGS.split(",")
+_TAGS_BANNED = os.getenv("TAGS_BANNED")
+TAGS_BANNED = _TAGS_BANNED.split(",")
 
 # Linkedin credentials
 EMAIL = os.getenv("LINKEDIN_EMAIL")
