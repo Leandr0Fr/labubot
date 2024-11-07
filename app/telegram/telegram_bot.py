@@ -1,24 +1,22 @@
 import telebot
-from requests.exceptions import ReadTimeout
 
 from ..constants.constants import TELEGRAM_ID, TELEGRAM_KEY
 
-bot = telebot.TeleBot(TELEGRAM_KEY)
 
-
-def send_ofert(url_job: str, color: str) -> None:
+def send_offers(offers) -> None:
+    bot = telebot.TeleBot(TELEGRAM_KEY)
     try:
         bot.send_message(
             TELEGRAM_ID,
-            f"""Aquí tienes una oferta interesante {color} 
-            {url_job}""",
+            offers,
         )
-    except ReadTimeout:
-        send_ofert(url_job, color)
+    except Exception:
+        send_offers(offers)
 
 
 def send_keyword(keyword: str) -> None:
+    bot = telebot.TeleBot(TELEGRAM_KEY)
     try:
         bot.send_message(TELEGRAM_ID, f"Ofertas de {keyword}")
-    except ReadTimeout:
+    except Exception:
         send_keyword(keyword)
