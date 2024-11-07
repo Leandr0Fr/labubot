@@ -2,6 +2,7 @@ import math
 import re
 import time
 
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -11,6 +12,7 @@ from ..decorators.refresh import refresh
 from .driver import DriverSingleton
 
 
+@refresh()
 def login():
     driver = DriverSingleton.get_driver()
     base_url = "https://www.linkedin.com/checkpoint/lg/sign-in-another-account"
@@ -53,6 +55,8 @@ def get_matchs(keyword, driver, base_url, total_pages):
     for page in range(total_pages):
         page_url = base_url.format(keyword) + str(page * 25)
         driver.get(page_url)
+        if check_element_exists_by_class(driver, "jobs-search-no-results-banner"):
+            return jobs
         WebDriverWait(driver, 20).until(
             EC.visibility_of_element_located((By.CLASS_NAME, "jobs-search-results-list"))
         )
@@ -60,6 +64,14 @@ def get_matchs(keyword, driver, base_url, total_pages):
         if jobs_page_result:
             jobs.update(jobs_page_result)
     return jobs
+
+
+def check_element_exists_by_class(driver, class_name):
+    try:
+        driver.find_element(By.CLASS_NAME, class_name)
+        return True
+    except NoSuchElementException:
+        return False
 
 
 def get_first_digits(text: str) -> int:
