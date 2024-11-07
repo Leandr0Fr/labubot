@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from ..constants.constants import EMAIL, PSW, TAGS, TAGS_BANNED
+from ..decorators.refresh import refresh
 from .driver import DriverSingleton
 
 
@@ -29,6 +30,7 @@ def login():
     login_button.click()
 
 
+@refresh()
 def get_jobs(keyword: str) -> dict:
     time.sleep(20)
 
@@ -45,17 +47,12 @@ def get_jobs(keyword: str) -> dict:
     for page in range(total_pages):
         page_url = base_url.format(keyword) + str(page * 25)
         driver.get(page_url)
-        try:
-            WebDriverWait(driver, 20).until(
-                EC.visibility_of_element_located((By.CLASS_NAME, "jobs-search-results-list"))
-            )
-            jobs_page_result = get_match_jobs(driver, TAGS)
-            if jobs_page_result:
-                jobs.update(jobs_page_result)
-        except Exception:
-            time.sleep(1)
-            get_jobs(keyword)
-
+        WebDriverWait(driver, 20).until(
+            EC.visibility_of_element_located((By.CLASS_NAME, "jobs-search-results-list"))
+        )
+        jobs_page_result = get_match_jobs(driver, TAGS)
+        if jobs_page_result:
+            jobs.update(jobs_page_result)
     return jobs
 
 
@@ -69,18 +66,16 @@ def get_num_pags(number_jobs: int) -> int:
     return math.ceil(number_jobs / jobs_per_page)
 
 
+@refresh()
 def get_match_jobs(driver, tags) -> dict:
     jobs_match = {}
-    try:
-        WebDriverWait(driver, 20).until(
-            EC.visibility_of_element_located((By.CLASS_NAME, "jobs-search-results-list"))
-        )
-        results_list = driver.find_element(By.CLASS_NAME, "jobs-search-results-list")
-        ul_element = results_list.find_element(By.CLASS_NAME, "scaffold-layout__list-container")
-        li_elements = ul_element.find_elements(By.CLASS_NAME, "jobs-search-results__list-item")
-        if not li_elements:
-            return {}
-    except Exception:
+    WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located((By.CLASS_NAME, "jobs-search-results-list"))
+    )
+    results_list = driver.find_element(By.CLASS_NAME, "jobs-search-results-list")
+    ul_element = results_list.find_element(By.CLASS_NAME, "scaffold-layout__list-container")
+    li_elements = ul_element.find_elements(By.CLASS_NAME, "jobs-search-results__list-item")
+    if not li_elements:
         return {}
 
     scroll_percentage = 0
@@ -90,40 +85,31 @@ def get_match_jobs(driver, tags) -> dict:
             f"arguments[0].scrollTop = arguments[0].scrollHeight * {scroll_percentage / 100};",
             results_list,
         )
-        try:
-            title_element = li.find_element(By.CLASS_NAME, "job-card-list__title")
-            title_strong = title_element.find_element(By.TAG_NAME, "strong")
-            title_text = title_strong.text
-            title_words = title_text.lower()
-            title_words = title_words.replace("(", "").replace(")", "").replace("-", "").replace("/", "")
-            title_words = title_words.split()
-            if any(tag in title_words for tag in tags) and not any(
-                tag_b in title_words for tag_b in TAGS_BANNED
-            ):
-                li.click()
-                time.sleep(1)
-                WebDriverWait(driver, 20).until(
-                    EC.visibility_of_element_located((By.CLASS_NAME, "jobs-description__container"))
-                )
-                description = extract_description_text(driver)
-                jobs_match[title_element.get_attribute("href")] = description
-        except Exception:
+        title_element = li.find_element(By.CLASS_NAME, "job-card-list__title")
+        title_strong = title_element.find_element(By.TAG_NAME, "strong")
+        title_text = title_strong.text
+        title_words = title_text.lower()
+        title_words = title_words.replace("(", "").replace(")", "").replace("-", "").replace("/", "")
+        title_words = title_words.split()
+        if any(tag in title_words for tag in tags) and not any(tag_b in title_words for tag_b in TAGS_BANNED):
+            li.click()
             time.sleep(1)
-            get_match_jobs(driver, tags)
+            WebDriverWait(driver, 20).until(
+                EC.visibility_of_element_located((By.CLASS_NAME, "jobs-description__container"))
+            )
+            description = extract_description_text(driver)
+            jobs_match[title_element.get_attribute("href")] = description
 
     return jobs_match
 
 
+@refresh()
 def extract_description_text(driver) -> str:
-    try:
-        description_container = WebDriverWait(driver, 20).until(
-            EC.visibility_of_element_located((By.CLASS_NAME, "jobs-description__container"))
-        )
-        p_container = description_container.find_element(By.CLASS_NAME, "mt4")
-        description = p_container.find_element(By.TAG_NAME, "p")
-        paragraph_spans = description.find_elements(By.TAG_NAME, "span")
-        paragraph_text = " ".join([span.text for span in paragraph_spans])
-        return paragraph_text
-    except Exception:
-        time.sleep(1)
-        return extract_description_text(driver)
+    description_container = WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located((By.CLASS_NAME, "jobs-description__container"))
+    )
+    p_container = description_container.find_element(By.CLASS_NAME, "mt4")
+    description = p_container.find_element(By.TAG_NAME, "p")
+    paragraph_spans = description.find_elements(By.TAG_NAME, "span")
+    paragraph_text = " ".join([span.text for span in paragraph_spans])
+    return paragraph_text
