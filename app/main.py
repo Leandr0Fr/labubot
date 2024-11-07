@@ -21,9 +21,9 @@ def main():
             color = ""
             if match == Match_Color.AMARILLO:
                 color = "🟡"
-            if match == Match_Color.VERDE:
+            elif match == Match_Color.VERDE:
                 color = "🟢"
-            if match == Match_Color.ROJO:
+            else:
                 continue
             send_ofert(url, color)
 
