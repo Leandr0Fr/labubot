@@ -43,6 +43,12 @@ def get_jobs(keyword: str) -> dict:
     jobs_found = get_first_digits(number_jobs.text)
     total_pages = get_num_pags(jobs_found)
 
+    jobs = get_matchs(keyword, driver, base_url, total_pages)
+    return jobs
+
+
+@refresh()
+def get_matchs(keyword, driver, base_url, total_pages):
     jobs = {}
     for page in range(total_pages):
         page_url = base_url.format(keyword) + str(page * 25)
