@@ -25,5 +25,6 @@ class DriverSingleton:
     def get_driver(cls):
         return cls()._driver
 
+    @classmethod
     def close_driver(self):
         self.get_driver().quit()
