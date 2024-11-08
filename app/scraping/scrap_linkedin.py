@@ -17,6 +17,7 @@ class LinkedInJobScraper:
         self.actual_page = 0
         self.total_pages = 0
         self.driver = DriverSingleton.get_driver()
+        self.urls_used = []
 
     @refresh()
     def login(self):
@@ -38,7 +39,7 @@ class LinkedInJobScraper:
 
     @refresh()
     def get_jobs(self, keyword: str) -> dict:
-        time.sleep(20)
+        time.sleep(30)
         base_url = "https://www.linkedin.com/jobs/search/?keywords={}&f_TPR=r86400&origin=JOB_SEARCH_PAGE_JOB_FILTER&sortBy=DD&start="
         self.driver.get(base_url.format(keyword) + "0")
         WebDriverWait(self.driver, 20).until(
@@ -92,14 +93,16 @@ class LinkedInJobScraper:
             if any(tag in title_words for tag in tags) and not any(
                 tag_b in title_words for tag_b in TAGS_BANNED
             ):
-                li.click()
-                time.sleep(1)
-                WebDriverWait(self.driver, 20).until(
-                    EC.visibility_of_element_located((By.CLASS_NAME, "jobs-description__container"))
-                )
-                description = self.extract_description_text()
-                jobs_match[title_element.get_attribute("href")] = description
-
+                url = title_element.get_attribute("href")
+                if url not in self.urls_used:
+                    li.click()
+                    time.sleep(1)
+                    WebDriverWait(self.driver, 20).until(
+                        EC.visibility_of_element_located((By.CLASS_NAME, "jobs-description__container"))
+                    )
+                    description = self.extract_description_text()
+                    jobs_match[url] = description
+                    self.urls_used.append(url)
         return jobs_match
 
     def clean_title(self, title):
