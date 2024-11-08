@@ -17,6 +17,6 @@ def send_offers(offers) -> None:
 def send_keyword(keyword: str) -> None:
     bot = telebot.TeleBot(TELEGRAM_KEY)
     try:
-        bot.send_message(TELEGRAM_ID, f"Ofertas de {keyword}")
+        bot.send_message(TELEGRAM_ID, f"🤞💻 Ofertas de {keyword} 💻🤞")
     except Exception:
         send_keyword(keyword)
