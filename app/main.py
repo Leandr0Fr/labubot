@@ -5,17 +5,18 @@ from dotenv import load_dotenv
 from .constants.constants import KEYWORDS
 from .constants.match_enum import Match_Color
 from .gemini.match_prompt_cv import match_cv
-from .scraping.scrap_linkedin import get_jobs, login
+from .scraping.scrap_linkedin import LinkedInJobScraper
 from .telegram.telegram_bot import send_keyword, send_offers
 
 
 def main():
     load_dotenv()
-    login()
+    scraper = LinkedInJobScraper()
+    scraper.login()
     urls_used = []
     for keyword in KEYWORDS:
-        jobs = get_jobs(keyword)
-        offers = ""
+        scraper.reboot_data()
+        jobs = scraper.get_jobs(keyword)
         for url, job in jobs.items():
             if url in urls_used:
                 continue
@@ -28,9 +29,8 @@ def main():
                 color = "🟢"
             if color:
                 urls_used.append(url)
-                offers += f"Se encontró una oferta {color}: {url}\n"
+                send_offers(f"Se encontró una oferta {color}: {url}\n")
         send_keyword(keyword)
-        send_offers(offers)
 
 
 if __name__ == "__main__":
