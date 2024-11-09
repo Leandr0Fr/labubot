@@ -108,7 +108,12 @@ class LinkedInJobScraper:
     def clean_title(self, title):
         title_words = title.lower()
         title_words = (
-            title_words.replace("(", "").replace(")", "").replace("-", "").replace("/", "").replace(".", "")
+            title_words.replace("(", " ")
+            .replace(")", " ")
+            .replace("-", " ")
+            .replace("/", " ")
+            .replace(".", " ")
+            .replace("+", " ")
         )
 
         return title_words
