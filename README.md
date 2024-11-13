@@ -14,17 +14,17 @@ Las ofertas se catalogan en 3 tipos:
 ## Instalación
 Se necesita tener Python 3.12 o superior.
 
-1.Clonar el repositorio.
+1. Clonar el repositorio.
 
-2.Instalar Poetry usando `pip install poetry`.
+2. Instalar Poetry usando `pip install poetry`.
 
-3.Ingresar a la carpeta del proyecto y ejecutar los siguientes comandos: `poetry install` y `poetry shell`.
+3. Ingresar a la carpeta del proyecto y ejecutar los siguientes comandos: `poetry install` y `poetry shell`.
 
-4.Renombrar el archivo `.env.example` a `.env`.
+4. Renombrar el archivo `.env.example` a `.env`.
 
-5.Reemplazar los valores correspondientes en el archivo `.env`.
+5. Reemplazar los valores correspondientes en el archivo `.env`.
 
-6.Generar un chatbot en Telegram. Para ello, busque "BotFather" en el buscador de Telegram y siga los pasos indicados.
+6. Generar un chatbot en Telegram. Para ello, busque "BotFather" en el buscador de Telegram y siga los pasos indicados.
    
 ## Ejecución
 Ejecutar el siguiente comando: `poetry run start`.
