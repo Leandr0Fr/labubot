@@ -20,3 +20,11 @@ def send_keyword(keyword: str) -> None:
         bot.send_message(TELEGRAM_ID, f"🤞💻 Ofertas de {keyword} 💻🤞")
     except Exception:
         send_keyword(keyword)
+
+
+def send_no_jobs(keyword: str) -> None:
+    bot = telebot.TeleBot(TELEGRAM_KEY)
+    try:
+        bot.send_message(TELEGRAM_ID, f"👾 No encontré trabajos distintos con la keyword: {keyword} 👾")
+    except Exception:
+        send_keyword(keyword)

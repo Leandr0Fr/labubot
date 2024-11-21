@@ -17,7 +17,7 @@ class LinkedInJobScraper:
         self.actual_page = 0
         self.total_pages = 0
         self.driver = DriverSingleton.get_driver()
-        self.urls_used = []
+        self.jobs_used = []
 
     @refresh()
     def login(self) -> None:
@@ -94,7 +94,8 @@ class LinkedInJobScraper:
                 tag_b in title_words for tag_b in TAGS_BANNED
             ):
                 url = title_element.get_attribute("href")
-                if url not in self.urls_used:
+                job_id = self.extract_job_id(url)
+                if job_id not in self.jobs_used:
                     li.click()
                     time.sleep(1)
                     WebDriverWait(self.driver, 20).until(
@@ -102,8 +103,14 @@ class LinkedInJobScraper:
                     )
                     description = self.extract_description_text()
                     jobs_match[url] = description
-                    self.urls_used.append(url)
+                    self.jobs_used.append(job_id)
+                else:
+                    print(title_words)
         return jobs_match
+
+    def extract_job_id(self, url) -> str:
+        match = re.search(r"/jobs/view/(\d+)", url)
+        return match.group(1) if match else None
 
     def clean_title(self, title):
         title_words = title.lower()
@@ -115,6 +122,7 @@ class LinkedInJobScraper:
             .replace(".", " ")
             .replace("+", " ")
             .replace(",", " ")
+            .replace("|", " ")
         )
 
         return title_words
