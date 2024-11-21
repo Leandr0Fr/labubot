@@ -20,7 +20,7 @@ class LinkedInJobScraper:
         self.urls_used = []
 
     @refresh()
-    def login(self):
+    def login(self) -> None:
         base_url = "https://www.linkedin.com/checkpoint/lg/sign-in-another-account"
         self.driver.get(base_url)
         WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.ID, "username")))
@@ -114,6 +114,7 @@ class LinkedInJobScraper:
             .replace("/", " ")
             .replace(".", " ")
             .replace("+", " ")
+            .replace(",", " ")
         )
 
         return title_words
