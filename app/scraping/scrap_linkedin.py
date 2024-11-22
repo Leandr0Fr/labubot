@@ -104,8 +104,7 @@ class LinkedInJobScraper:
                     description = self.extract_description_text()
                     jobs_match[url] = description
                     self.jobs_used.append(job_id)
-                else:
-                    print(title_words)
+
         return jobs_match
 
     def extract_job_id(self, url) -> str:
