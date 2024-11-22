@@ -16,8 +16,7 @@ def main():
     for keyword in KEYWORDS:
         scraper.reboot_data()
         jobs = scraper.get_jobs(keyword)
-        offers = ""
-        cont = 0
+        exists_offers = False
         for url, job in jobs.items():
             time.sleep(1)
             match = match_cv(job)
@@ -27,15 +26,10 @@ def main():
             if match == Match_Color.VERDE:
                 color = "🟢"
             if color:
-                offers += f"Se encontró una oferta {color}: {url}\n"
-                cont += 1
-                if cont == 5:
-                    send_offers(offers)
-                    cont = 0
-                    offers = ""
-        if offers:
-            send_offers(offers)
-        if jobs:
+                send_offers(f"Se encontró una oferta {color}: {url}")
+                exists_offers = True
+                time.sleep(1)
+        if exists_offers:
             send_keyword(keyword)
         else:
             send_no_jobs(keyword)

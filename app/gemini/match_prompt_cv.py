@@ -14,16 +14,18 @@ Vas a evaluar una oferta laboral y un CV para determinar su compatibilidad. Sigu
 
 Condiciones de descarte:
 1. Descarta ofertas para puestos de nivel senior.
-2. Si la oferta está mayoritariamente en inglés, descártala.
+2. Si la oferta está escrita en el idioma inglés, descártala.
 3. Descarta ofertas en blanco.
 4. Si la oferta es para trabajo presencial fuera de Argentina o Buenos Aires, descártala.
-
+5. Si solicitan más de 4 años de experiencia, descártala.
 Instrucciones de clasificación:
 - Escribe **"GREEN"** solo si la oferta es altamente compatible con el CV, es decir, la experiencia solicitada es razonable y la mayoría de las tecnologías pedidas están presentes en el CV.
 - Escribe **"YELLOW"** solo si la oferta es moderadamente compatible, es decir, si faltan varias tecnologías solicitadas, la oferta requiere más de 2 años de experiencia o un nivel de inglés más alto que el del CV.
-- Escribe **"RED"** solo si la oferta no es compatible. Esto incluye casos en los que se requieren tecnologías muy diferentes o demasiados años de experiencia, o si la oferta cumple alguna de las condiciones de descarte (1, 2, 3 o 4).
+- Escribe **"RED"** solo si la oferta no es compatible. Esto incluye casos en los que se requieren tecnologías muy diferentes o demasiados años de experiencia, o si la oferta cumple alguna de las condiciones de descarte (1, 2, 3, 4 o 5).
 
 **Solo escribe el color determinado según la evaluación de compatibilidad. No agregues nada más.**
+**RECUERDA DESCARTAR LAS OFERTAS EN INGLÉS**
+**RECUERDA ESCRIBIR "RED" SI LA OFERTA ESTÁ EN INGLES MAQUINA TROLA**                                          
 
 Oferta laboral: {job}
 CV: {CV}
