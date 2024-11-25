@@ -57,11 +57,9 @@ class LinkedInJobScraper:
         while self.actual_page < self.total_pages:
             page_url = base_url.format(keyword) + str(self.actual_page * 25)
             self.driver.get(page_url)
+            # Si existe el elemento, entonces es porque se llegó a una página que no existe.
             if self.check_element_exists_by_class("jobs-search-no-results-banner"):
                 return jobs
-            WebDriverWait(self.driver, 20).until(
-                EC.visibility_of_element_located((By.CLASS_NAME, "jobs-search-results-list"))
-            )
             jobs_page_result = self.get_match_jobs(TAGS)
             if jobs_page_result:
                 jobs.update(jobs_page_result)
@@ -72,9 +70,9 @@ class LinkedInJobScraper:
     def get_match_jobs(self, tags) -> dict:
         jobs_match = {}
         WebDriverWait(self.driver, 20).until(
-            EC.visibility_of_element_located((By.CLASS_NAME, "jobs-search-results-list"))
+            EC.visibility_of_element_located((By.CLASS_NAME, "gJglEZPRfVcAesXVXEBcfixvlAwFEHyUg"))
         )
-        results_list = self.driver.find_element(By.CLASS_NAME, "jobs-search-results-list")
+        results_list = self.driver.find_element(By.CLASS_NAME, "gJglEZPRfVcAesXVXEBcfixvlAwFEHyUg")
         ul_element = results_list.find_element(By.CLASS_NAME, "scaffold-layout__list-container")
         li_elements = ul_element.find_elements(By.CLASS_NAME, "jobs-search-results__list-item")
         if not li_elements:
