@@ -39,7 +39,7 @@ class LinkedInJobScraper:
 
     @refresh()
     def get_jobs(self, keyword: str) -> dict:
-        time.sleep(30)
+        time.sleep(10)
         base_url = "https://www.linkedin.com/jobs/search/?keywords={}&f_TPR=r86400&origin=JOB_SEARCH_PAGE_JOB_FILTER&sortBy=DD&start="
         self.driver.get(base_url.format(keyword) + "0")
         WebDriverWait(self.driver, 20).until(
@@ -70,11 +70,12 @@ class LinkedInJobScraper:
     def get_match_jobs(self, tags) -> dict:
         jobs_match = {}
         WebDriverWait(self.driver, 20).until(
-            EC.visibility_of_element_located((By.CLASS_NAME, "gJglEZPRfVcAesXVXEBcfixvlAwFEHyUg"))
+            EC.visibility_of_element_located((By.CLASS_NAME, "scaffold-layout__list"))
         )
-        results_list = self.driver.find_element(By.CLASS_NAME, "gJglEZPRfVcAesXVXEBcfixvlAwFEHyUg")
-        ul_element = results_list.find_element(By.CLASS_NAME, "scaffold-layout__list-container")
-        li_elements = ul_element.find_elements(By.CLASS_NAME, "jobs-search-results__list-item")
+        scaffold_layout = self.driver.find_element(By.CLASS_NAME, "scaffold-layout__list")
+        list_jobs = scaffold_layout.find_element(By.XPATH, "./div[1]")
+        ul_element = list_jobs.find_element(By.XPATH, "./ul[1]")
+        li_elements = ul_element.find_elements(By.XPATH, "./li")
         if not li_elements:
             return {}
         scroll_percentage = 0
@@ -82,9 +83,9 @@ class LinkedInJobScraper:
             scroll_percentage += 4
             self.driver.execute_script(
                 f"arguments[0].scrollTop = arguments[0].scrollHeight * {scroll_percentage / 100};",
-                results_list,
+                list_jobs,
             )
-            title_element = li.find_element(By.CLASS_NAME, "job-card-list__title")
+            title_element = li.find_element(By.CSS_SELECTOR, "[data-control-id]")
             title_strong = title_element.find_element(By.TAG_NAME, "strong")
             title_words = self.clean_title(title_strong.text)
             title_words = title_words.split()
@@ -96,13 +97,9 @@ class LinkedInJobScraper:
                 if job_id not in self.jobs_used:
                     li.click()
                     time.sleep(1)
-                    WebDriverWait(self.driver, 20).until(
-                        EC.visibility_of_element_located((By.CLASS_NAME, "jobs-description__container"))
-                    )
                     description = self.extract_description_text()
                     jobs_match[url] = description
                     self.jobs_used.append(job_id)
-
         return jobs_match
 
     def extract_job_id(self, url) -> str:
@@ -127,7 +124,7 @@ class LinkedInJobScraper:
     @refresh()
     def extract_description_text(self) -> str:
         description_container = WebDriverWait(self.driver, 20).until(
-            EC.visibility_of_element_located((By.CLASS_NAME, "jobs-description__container"))
+            EC.visibility_of_element_located((By.ID, "job-details"))
         )
         p_container = description_container.find_element(By.CLASS_NAME, "mt4")
         description = p_container.find_element(By.TAG_NAME, "p")
