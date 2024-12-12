@@ -8,28 +8,35 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 
 
 def match_cv(job: str) -> enumerate:
+    prompt_cv = f"""
+    Vas a evaluar una oferta laboral y un CV para determinar su compatibilidad según las condiciones y criterios detallados. Responde únicamente con el color correspondiente (GREEN, YELLOW o RED):
+
+    ### Condiciones de descarte:
+    1. Descarta ofertas para puestos de nivel senior.
+    2. Descarta ofertas escritas en cualquier idioma distinto al español.
+    3. Descarta ofertas en blanco.
+    4. Descarta ofertas de trabajo presencial fuera de Argentina o de la Ciudad de Buenos Aires.
+    5. Descarta ofertas que soliciten más de 4 años de experiencia.
+
+    ### Instrucciones de clasificación:
+    - Escribe **"GREEN"** si la oferta es altamente compatible con el CV: la experiencia solicitada es razonable y la mayoría de las tecnologías requeridas están presentes en el CV.
+    - Escribe **"YELLOW"** si la oferta es moderadamente compatible: faltan varias tecnologías solicitadas, requiere más de 2 años de experiencia o un nivel de inglés más alto que el indicado en el CV.
+    - Escribe **"RED"** si la oferta no es compatible. Esto incluye casos en los que se requieren tecnologías muy diferentes, demasiados años de experiencia, o si la oferta cumple alguna de las condiciones de descarte.
+
+    **Importante**:
+    - Solo analiza ofertas en español relacionadas con sistemas, programación y áreas similares.
+    - Responde únicamente con el color determinado según la evaluación de compatibilidad.
+
+    Oferta laboral: {job}
+    CV: {CV}
+    """  # noqa: E501
+
+    prompt_is_english = f"La siguiente oferta laboral está en inglés? {job}. Sí está en inglés responde 'SI', en caso contrario 'NO'"  # noqa: E501
     try:
-        response = model.generate_content(f"""
-Vas a evaluar una oferta laboral y un CV para determinar su compatibilidad. Sigue las condiciones detalladas a continuación y solo escribe el color correspondiente (GREEN, YELLOW o RED) basado en el nivel de ajuste:
-
-Condiciones de descarte:
-1. Descarta ofertas para puestos de nivel senior.
-2. Si la oferta está escrita en el idioma inglés, descártala.
-3. Descarta ofertas en blanco.
-4. Si la oferta es para trabajo presencial fuera de Argentina o Buenos Aires, descártala.
-5. Si solicitan más de 4 años de experiencia, descártala.
-Instrucciones de clasificación:
-- Escribe **"GREEN"** solo si la oferta es altamente compatible con el CV, es decir, la experiencia solicitada es razonable y la mayoría de las tecnologías pedidas están presentes en el CV.
-- Escribe **"YELLOW"** solo si la oferta es moderadamente compatible, es decir, si faltan varias tecnologías solicitadas, la oferta requiere más de 2 años de experiencia o un nivel de inglés más alto que el del CV.
-- Escribe **"RED"** solo si la oferta no es compatible. Esto incluye casos en los que se requieren tecnologías muy diferentes o demasiados años de experiencia, o si la oferta cumple alguna de las condiciones de descarte (1, 2, 3, 4 o 5).
-
-**Solo escribe el color determinado según la evaluación de compatibilidad. No agregues nada más.**
-**RECUERDA DESCARTAR LAS OFERTAS EN INGLÉS**
-**RECUERDA ESCRIBIR "RED" SI LA OFERTA ESTÁ EN INGLES MAQUINA TROLA**                                          
-
-Oferta laboral: {job}
-CV: {CV}
-""")  # noqa: E501
+        response_is_english = model.generate_content(prompt_is_english)
+        if response_is_english.text.strip() == "SI":
+            return Match_Color("RED")
+        response = model.generate_content(prompt_cv)
         return Match_Color(response.text.strip())
     except Exception:
         match_cv(job)
