@@ -39,17 +39,22 @@ class LinkedInJobScraper:
 
     @refresh()
     def get_jobs(self, keyword: str) -> dict:
-        time.sleep(10)
+        time.sleep(30)
         base_url = "https://www.linkedin.com/jobs/search/?keywords={}&f_TPR=r86400&origin=JOB_SEARCH_PAGE_JOB_FILTER&sortBy=DD&start="
         self.driver.get(base_url.format(keyword) + "0")
-        WebDriverWait(self.driver, 20).until(
-            EC.visibility_of_element_located((By.XPATH, "//span[@dir='ltr']"))
-        )
-        number_jobs = self.driver.find_element(By.XPATH, "//span[@dir='ltr']")
-        jobs_found = self.get_first_digits(number_jobs.text)
-        self.total_pages = self.get_num_pags(jobs_found)
+        self.get_number_jobs()
+        self.driver.get(base_url.format(keyword) + "0")
         jobs = self.get_matchs(keyword, base_url)
         return jobs
+
+    @refresh()
+    def get_number_jobs(self):
+        WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.ID, "main")))
+        main = self.driver.find_element(By.ID, "main")
+        header = main.find_element(By.XPATH, ".//header[1]")
+        small = header.find_element(By.XPATH, ".//small[1]")
+        jobs_found = self.get_first_digits(small.text)
+        self.total_pages = self.get_num_pags(jobs_found)
 
     @refresh()
     def get_matchs(self, keyword, base_url):
